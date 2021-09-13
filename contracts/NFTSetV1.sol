@@ -40,7 +40,7 @@ contract NFTSetV1 is ERC721Upgradeable, ERC721HolderUpgradeable, ERC1155HolderUp
         address owner,
         string memory name,
         string memory symbol
-    ) external override initializer {
+    ) public virtual override initializer {
         __ERC721_init(name, symbol);
         __ERC721Holder_init();
         __ERC1155Holder_init();
@@ -51,11 +51,11 @@ contract NFTSetV1 is ERC721Upgradeable, ERC721HolderUpgradeable, ERC1155HolderUp
         return ERC721Upgradeable.supportsInterface(interfaceId) || ERC1155ReceiverUpgradeable.supportsInterface(interfaceId);
     }
 
-    function withdrawERC721(address tokenAddress, uint256 tokenId) external onlyApprovedOrOwner {
+    function withdrawERC721(address tokenAddress, uint256 tokenId) public virtual onlyApprovedOrOwner {
         IERC721Upgradeable(tokenAddress).transferFrom(address(this), _msgSender(), tokenId);
     }
 
-    function safeWithdrawERC721(address tokenAddress, uint256 tokenId) external onlyApprovedOrOwner {
+    function safeWithdrawERC721(address tokenAddress, uint256 tokenId) public virtual onlyApprovedOrOwner {
         IERC721Upgradeable(tokenAddress).safeTransferFrom(address(this), _msgSender(), tokenId);
     }
 
@@ -64,7 +64,7 @@ contract NFTSetV1 is ERC721Upgradeable, ERC721HolderUpgradeable, ERC1155HolderUp
         uint256 tokenId,
         uint256 amount,
         bytes calldata data
-    ) external onlyApprovedOrOwner {
+    ) public virtual onlyApprovedOrOwner {
         IERC1155Upgradeable(tokenAddress).safeTransferFrom(address(this), _msgSender(), tokenId, amount, data);
     }
 
@@ -73,15 +73,15 @@ contract NFTSetV1 is ERC721Upgradeable, ERC721HolderUpgradeable, ERC1155HolderUp
         uint256[] calldata tokenIds,
         uint256[] calldata amounts,
         bytes calldata data
-    ) external onlyApprovedOrOwner {
+    ) public virtual onlyApprovedOrOwner {
         IERC1155Upgradeable(tokenAddress).safeBatchTransferFrom(address(this), _msgSender(), tokenIds, amounts, data);
     }
 
-    function withdrawERC20(address tokenAddress, uint256 amount) external onlyApprovedOrOwner {
+    function withdrawERC20(address tokenAddress, uint256 amount) public virtual onlyApprovedOrOwner {
         IERC20Upgradeable(tokenAddress).safeTransfer(_msgSender(), amount);
     }
 
-    function withdrawETH(uint256 amount) external onlyApprovedOrOwner {
+    function withdrawETH(uint256 amount) public virtual onlyApprovedOrOwner {
         (bool sent, bytes memory data) = _msgSender().call{value: amount}("");
         require(sent, "NFTSet: failed to withdraw Ether");
     }
@@ -92,7 +92,7 @@ contract NFTSetV1 is ERC721Upgradeable, ERC721HolderUpgradeable, ERC1155HolderUp
         bytes memory data,
         bool isDelegateCall,
         uint256 txGas
-    ) external payable onlyApprovedOrOwner {
+    ) public payable virtual onlyApprovedOrOwner {
         bool success;
 
         if (isDelegateCall) {
@@ -110,5 +110,5 @@ contract NFTSetV1 is ERC721Upgradeable, ERC721HolderUpgradeable, ERC1155HolderUp
         require(success, "NFTSet: failed execution");
     }
 
-    receive() external payable {}
+    receive() external payable virtual {}
 }
